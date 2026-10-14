@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Literary Type</title>
+
+    <!-- FUENTES -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <!-- CSS -->
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <!-- PEQUEÑOS AJUSTES PARA EL JUEGO -->
+    <style>
+
+        /* =========================
+           JUEGO OCULTO AL PRINCIPIO
+        ========================= */
+
+        #bookPanel,
+        #typingArea,
+        #progressContainer,
+        #resetButton {
+            display: none;
+        }
+
+
+        /* =========================
+           AREA DEL BOTON START
+        ========================= */
+
+        #startArea {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            margin: 30px 0;
+        }
+
+        #startButton {
+            min-width: 180px;
+            padding: 15px 40px;
+
+            font-size: 18px;
+            font-weight: 700;
+
+            letter-spacing: 3px;
+
+            cursor: pointer;
+        }
+
+
+        /* =========================
+           CUANDO EL JUEGO EMPIEZA
+        ========================= */
+
+        #gameScreen.game-active #startArea {
+            display: none;
+        }
+
+        #gameScreen.game-active #bookPanel {
+            display: block;
+        }
+
+        #gameScreen.game-active #typingArea {
+            display: block;
+        }
+
+        #gameScreen.game-active #progressContainer {
+            display: block;
+        }
+
+        #gameScreen.game-active #resetButton {
+            display: inline-block;
+        }
+
+
+        /* =========================
+           TEXTO
+        ========================= */
+
+        #textDisplay {
+            white-space: pre-wrap;
+            line-height: 1.9;
+        }
+
+
+        /* =========================
+           BOTON RESET
+        ========================= */
+
+        #resetButton {
+            margin-top: 20px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         MENU PRINCIPAL
+    ====================================================== -->
+
+    <section id="mainMenu" class="screen active">
+
+        <div class="menu-container">
+
+            <div class="logo">
+
+                <span class="logo-small">
+                    ENGLISH
+                </span>
+
+                <h1>
+                    LITERARY
+                    <span>TYPE</span>
+                </h1>
+
+                <p>
+                    Improve your English through literature.
+                </p>
+
+            </div>
+
+
+            <div class="menu-buttons">
+
+                <button
+                    id="playButton"
+                    class="menu-button primary"
+                >
+                    START TYPING
+                </button>
+
+
+                <button
+                    id="libraryButton"
+                    class="menu-button"
+                >
+                    LIBRARY
+                </button>
+
+
+                <button
+                    id="recordsButton"
+                    class="menu-button"
+                >
+                    RECORDS
+                </button>
+
+            </div>
+
+
+            <div class="menu-footer">
+
+                <span>
+                    LITERARY TYPE
+                </span>
+
+                <span>
+                    ENGLISH TYPING GAME
+                </span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         BIBLIOTECA
+    ====================================================== -->
+
+    <section id="libraryScreen" class="screen">
+
+        <div class="library-container">
+
+            <div class="section-header">
+
+                <div>
+
+                    <span class="section-label">
+                        COLLECTION
+                    </span>
+
+                    <h2>
+                        Literary Library
+                    </h2>
+
+                    <p>
+                        Choose a text to practice your English.
+                    </p>
+
+                </div>
+
+
+                <button
+                    id="backFromLibrary"
+                    class="small-button"
+                >
+                    ← MENU
+                </button>
+
+            </div>
+
+
+            <!-- LOS TEXTOS SE GENERAN DESDE texts.js -->
+
+            <div
+                id="textCards"
+                class="text-cards"
+            >
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         JUEGO
+    ====================================================== -->
+
+    <section id="gameScreen" class="screen">
+
+        <div class="game-container">
+
+
+            <!-- =========================
+                 CABECERA
+            ========================== -->
+
+            <div class="game-header">
+
+
+                <button
+                    id="backToMenu"
+                    class="small-button"
+                >
+                    ← MENU
+                </button>
+
+
+                <div class="game-info">
+
+                    <h2 id="bookTitle">
+                        The Hidden Letter
+                    </h2>
+
+                    <p id="bookAuthor">
+                        Original Literary Text
+                    </p>
+
+                </div>
+
+
+                <div
+                    id="difficulty"
+                    class="difficulty"
+                >
+                    EASY
+                </div>
+
+            </div>
+
+
+
+            <!-- =========================
+                 ESTADISTICAS
+            ========================== -->
+
+            <div class="stats">
+
+
+                <div class="stat">
+
+                    <span>
+                        WPM
+                    </span>
+
+                    <strong id="wpm">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <span>
+                        ACCURACY
+                    </span>
+
+                    <strong id="accuracy">
+                        100%
+                    </strong>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <span>
+                        COMBO
+                    </span>
+
+                    <strong id="combo">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat">
+
+                    <span>
+                        TIME
+                    </span>
+
+                    <strong id="timer">
+                        0
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 BOTON START
+                 ESTE ESTA ARRIBA DEL TEXTO
+            ================================================== -->
+
+            <div id="startArea">
+
+                <button
+                    id="startButton"
+                    class="game-button primary"
+                >
+                    START
+                </button>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 GLOBO / LIBRO CON EL TEXTO
+
+                 OCULTO HASTA START
+            ================================================== -->
+
+            <div
+                id="bookPanel"
+                class="book-panel"
+            >
+
+                <div class="book-decoration">
+
+                    <span>
+                        ✦
+                    </span>
+
+                    <span>
+                        PASSIVE VOICE MODE
+                    </span>
+
+                    <span>
+                        ✦
+                    </span>
+
+                </div>
+
+
+                <div
+                    id="textDisplay"
+                    class="text-display"
+                >
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =================================================
+                 AREA PARA ESCRIBIR
+
+                 OCULTA HASTA START
+            ================================================== -->
+
+            <div
+                id="typingArea"
+                class="typing-area"
+            >
+
+                <textarea
+                    id="typingInput"
+                    placeholder="Type the text here..."
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    disabled
+                ></textarea>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 PROGRESO
+            ================================================== -->
+
+            <div
+                id="progressContainer"
+                class="progress-container"
+            >
+
+                <div class="progress-info">
+
+                    <span>
+                        PROGRESS
+                    </span>
+
+                    <span id="progressText">
+                        0%
+                    </span>
+
+                </div>
+
+
+                <div class="progress">
+
+                    <div
+                        id="progressBar"
+                        class="progress-bar"
+                    >
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =========================
+                 BOTON RESET
+            ========================== -->
+
+            <button
+                id="resetButton"
+                class="game-button"
+            >
+                RESET
+            </button>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         RESULTADOS
+    ====================================================== -->
+
+    <section id="resultScreen" class="screen">
+
+        <div class="result-container">
+
+
+            <div class="result-header">
+
+                <span class="section-label">
+                    SESSION COMPLETE
+                </span>
+
+                <h2>
+                    Well Done!
+                </h2>
+
+                <p>
+                    Here are your typing results.
+                </p>
+
+            </div>
+
+
+
+            <!-- RESULTADOS -->
+
+            <div class="result-stats">
+
+
+                <div class="result-card">
+
+                    <span>
+                        WPM
+                    </span>
+
+                    <strong id="finalWpm">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="result-card">
+
+                    <span>
+                        ACCURACY
+                    </span>
+
+                    <strong id="finalAccuracy">
+                        0%
+                    </strong>
+
+                </div>
+
+
+                <div class="result-card">
+
+                    <span>
+                        TIME
+                    </span>
+
+                    <strong id="finalTime">
+                        0
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+
+            <!-- =========================
+                 BOTONES RESULTADOS
+            ========================== -->
+
+            <div class="result-buttons">
+
+                <button
+                    id="playAgain"
+                    class="menu-button primary"
+                >
+                    PLAY AGAIN
+                </button>
+
+
+                <button
+                    id="resultMenu"
+                    class="menu-button"
+                >
+                    MAIN MENU
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script
+        src="{{ url_for('static', filename='js/texts.js') }}"
+    ></script>
+
+
+    <script
+        src="{{ url_for('static', filename='js/pavlov.js') }}"
+    ></script>
+
+
+    <script
+        src="{{ url_for('static', filename='js/game.js') }}"
+    ></script>
+
+
+
+    <!-- =====================================================
+         CONTROL DEL BOTON START
+    ====================================================== -->
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const startButton =
+                document.getElementById("startButton");
+
+            const gameScreen =
+                document.getElementById("gameScreen");
+
+            const typingInput =
+                document.getElementById("typingInput");
+
+
+            if (!startButton) {
+                return;
+            }
+
+
+            startButton.addEventListener("click", function () {
+
+                /*
+                 * Activamos la pantalla del juego.
+                 */
+
+                gameScreen.classList.add("game-active");
+
+
+                /*
+                 * Activamos el campo de escritura.
+                 */
+
+                if (typingInput) {
+
+                    typingInput.disabled = false;
+
+                    typingInput.focus();
+
+                }
+
+
+                /*
+                 * START desaparece automáticamente
+                 * mediante CSS.
+                 */
+
+            });
+
+        });
+
+    </script>
+
+
+</body>
+
+</html>
